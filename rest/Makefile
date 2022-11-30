@@ -1,11 +1,11 @@
-VERSION=v3
+VERSION=v2
 DOCKERUSER=mukundkalantri23
 
 build:
-	docker build -f Dockerfile -t demucs-rest .
+	docker build -f Dockerfile -t mysql-rest .
 
 push:
-	docker tag demucs-rest $(DOCKERUSER)/demucs-rest:$(VERSION)
-	docker push $(DOCKERUSER)/demucs-rest:$(VERSION)
-	docker tag demucs-rest $(DOCKERUSER)/demucs-rest:latest
-	docker push $(DOCKERUSER)/demucs-rest:latest
+	docker tag mysql-rest $(DOCKERUSER)/mysql-rest:$(VERSION)
+	docker push $(DOCKERUSER)/mysql-rest:$(VERSION)
+	docker tag mysql-rest $(DOCKERUSER)/mysql-rest:latest
+	docker push $(DOCKERUSER)/mysql-rest:latest
