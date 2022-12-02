@@ -16,6 +16,12 @@ spec:
       - name: rest
         image: mukundkalantri23/mysql-rest:latest
         env:
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: MINIO_HOST
+              value: "minio:9000"
             - name: db_root_password
               valueFrom:
                 secretKeyRef:
