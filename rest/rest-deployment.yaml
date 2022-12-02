@@ -14,17 +14,20 @@ spec:
     spec:
       containers:
       - name: rest
-        image: mukundkalantri23/demucs-rest:latest
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
+        image: mukundkalantri23/mysql-rest:latest
         env:
-        - name: REDIS_HOST
-          value: "redis"
-        - name: REDIS_PORT
-          value: "6379"
-        - name: MINIO_HOST
-          value: "minio:9000"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: MINIO_HOST
+              value: "minio:9000"
+            - name: db_root_password
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: db_name
+              value: drugdealer # create db before running this
         ports:
         - containerPort: 5002
