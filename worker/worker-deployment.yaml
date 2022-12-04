@@ -32,7 +32,7 @@ spec:
             - name: table_name
               value: data
             - name: SENDGRID_API_KEY
-              value: "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"
+              value: ""
             - name: SENDGRID_VERIFIED_SENDER
               value: "mukundkalantri23@gmail.com"
         ports:
