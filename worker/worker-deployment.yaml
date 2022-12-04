@@ -1,29 +1,35 @@
 apiVersion: apps/v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
 kind: Deployment
 metadata:
-  name: demucs-worker
+  name: drugdealer-worker
 spec:
   selector:
     matchLabels:
-      app: demucs-worker
+      app: drugdealer-worker
   replicas: 1
   template:
     metadata:
       labels:
-        app: demucs-worker
+        app: drugdealer-worker
     spec:
       containers:
-      - name: demucs-worker
-        image: mukundkalantri23/demucs-worker:latest
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
+      - name: drugdealer-worker
+        image: mukundkalantri23/drugdealer-worker:latest
         env:
-        - name: REDIS_HOST
-          value: "redis"
-        - name: REDIS_PORT
-          value: "6379"
-        - name: MINIO_HOST
-          value: "minio:9000"
-        
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: MINIO_HOST
+              value: "minio:9000"
+            - name: db_root_password
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: db_name
+              value: drugdealer
+            - name: table_name
+              value: data
+        ports:
+        - containerPort: 5002

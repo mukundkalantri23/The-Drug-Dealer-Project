@@ -11,7 +11,7 @@ im_b64 = base64.b64encode(im_bytes).decode("utf8")
 
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
   
-payload = json.dumps({"image": im_b64, "other_key": "value"})
+payload = json.dumps({"image": im_b64, "email_id": "muka4041@colorado.edu"})
 response = requests.post(api, data=payload, headers=headers)
 try:
     data = response.json()     

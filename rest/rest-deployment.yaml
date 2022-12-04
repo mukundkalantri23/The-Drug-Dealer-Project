@@ -28,6 +28,6 @@ spec:
                   name: mysql-secret
                   key: password
             - name: db_name
-              value: drugdealer # create db before running this
+              value: drugdealer
         ports:
         - containerPort: 5002
