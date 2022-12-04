@@ -2,6 +2,9 @@ import os, sys, redis, json, shutil, pandas as pd, numpy as np
 from google.cloud import vision
 from minio import Minio
 import mysql.connector
+import sendgrid
+from sendgrid.helpers.mail import Mail, Email, To, Content
+
 
 # ---------REDIS CONFIGURATIOM----------
 
@@ -51,10 +54,6 @@ redisClient.lpush("logging", str({"worker.logs":f"mysql connected"}))
 cursor.execute(f"SHOW COLUMNS FROM {db_name}.{table_name};")
 myresult = cursor.fetchall()
 columns = [c_data[0] for c_data in myresult]
-
-print(columns)
-sys.stdout.flush()
-sys.stderr.flush()
 
 # ---------Connecting with Google Vision API----------
 
@@ -160,22 +159,56 @@ while True:
         fname, email_id = fname.split('_')
         redisClient.lpush("logging", str({"worker.logs.processing_file":fname}))
         redisClient.lpush("logging", str({"worker.logs.output_email":email_id}))
+        print(f'Data Recieved: {fname} {email_id}')
+        sys.stdout.flush()
+        sys.stderr.flush()
         
         data = client.get_object(recieptbucket, fname)
         with open(fname, 'wb') as file_data:
             for d in data.stream(32*1024):
                 file_data.write(d)
+        print('reciept image downloaded')
+        sys.stdout.flush()
+        sys.stderr.flush()
         redisClient.lpush("logging", str({"worker.logs.Image downloaded":fname}))
         
         med_list = img_txt(fname)
-
+        print('OCR done')
+        sys.stdout.flush()
+        sys.stderr.flush()
+        
         output = get_output(med_list)
+        print('output: ', output)
+        sys.stdout.flush()
+        sys.stderr.flush()
         redisClient.lpush("logging", str({"worker.logs.output": f"{output}"}))
 
         os.remove(fname)
+        print('reciept image deleted from local')
+        sys.stdout.flush()
+        sys.stderr.flush()
         redisClient.lpush("logging", str({"worker.logs.Image_deleted_from_local": f"{fname}"}))
 
-        # Email logic remaining
+        print('sending output in email')
+        sys.stdout.flush()
+        sys.stderr.flush()
+        sg = sendgrid.SendGridAPIClient(api_key=os.getenv("SENDGRID_API_KEY"))
+        
+        from_email = Email(os.getenv("SENDGRID_VERIFIED_SENDER"))  # Change to your verified sender
+        to_email = To(email_id)  # Change to your recipient
+        subject = "Medical Stores for you"
+        content = Content("text/plain", output)
+        mail = Mail(from_email, to_email, subject, content)
+        
+        mail_json = mail.get()        
+        response = sg.client.mail.send.post(request_body=mail_json)
+        
+        print(response.status_code)
+
+        print('Output Email Sent!')
+        sys.stdout.flush()
+        sys.stderr.flush()
+        redisClient.lpush("logging", str({"worker.logs.output_email_status": f"{response.status_code}"}))
 
     except Exception as exp:
         print(f"Exception raised in log loop: {str(exp)}")
