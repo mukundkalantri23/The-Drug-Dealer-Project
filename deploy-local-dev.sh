@@ -16,11 +16,13 @@ kubectl apply -f mysql/mysql-secret.yaml
 kubectl apply -f mysql/mysql-storage.yaml
 kubectl apply -f mysql/mysql-deployment.yaml
 
+sleep 10
+
 kubectl apply -f rest/rest-deployment.yaml
 kubectl apply -f rest/rest-service.yaml
 kubectl apply -f rest/rest-ingress.yaml
 
-# kubectl apply -f worker/worker-deployment.yaml
+kubectl apply -f worker/worker-deployment.yaml
 
 sleep 10
 
@@ -34,7 +36,7 @@ kubectl port-forward -n minio-ns --address 0.0.0.0 service/minio-proj 9001:9001 
 # kubectl delete deployment redis
 # kubectl delete deployment mysql
 # kubectl delete deployment rest
-# # kubectl delete deployment demucs-worker
+# kubectl delete deployment drugdealer-worker
 
 # kubectl delete svc minio
 # kubectl delete svc mysql

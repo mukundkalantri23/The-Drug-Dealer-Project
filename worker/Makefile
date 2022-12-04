@@ -1,10 +1,10 @@
-VERSION=v2
+VERSION=v1
 DOCKERUSER=mukundkalantri23
 
 build:
-	docker build -f Dockerfile -t demucs-worker .
+	docker build -f Dockerfile -t drugdealer-worker .
 push:
-	docker tag demucs-worker $(DOCKERUSER)/demucs-worker:$(VERSION)
-	docker push $(DOCKERUSER)/demucs-worker:$(VERSION)
-	docker tag demucs-worker $(DOCKERUSER)/demucs-worker:latest
-	docker push $(DOCKERUSER)/demucs-worker:latest
+	docker tag drugdealer-worker $(DOCKERUSER)/drugdealer-worker:$(VERSION)
+	docker push $(DOCKERUSER)/drugdealer-worker:$(VERSION)
+	docker tag drugdealer-worker $(DOCKERUSER)/drugdealer-worker:latest
+	docker push $(DOCKERUSER)/drugdealer-worker:latest

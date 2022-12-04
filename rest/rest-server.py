@@ -33,7 +33,7 @@ if not client.bucket_exists(recieptbucket):
     client.make_bucket(recieptbucket)
     redisClient.lpush("logging", str({"rest.logs.queue_bucket_created":recieptbucket}))
     
-# # ---------MYSQL CONFIGURATIOM----------
+# ---------MYSQL CONFIGURATIOM----------
 
 mysql = MySQL()
 
@@ -58,7 +58,7 @@ val = []
 
 for i in range(100):
     no_med = np.random.randint(75,150)
-    med_index = np.random.randint(0,len(med_data),no_med)
+    med_index = np.random.choice(len(med_data), no_med, replace=False)
     med_index.sort()
     med_inventory = med_data.loc[med_index, :]
     med_inventory['quantity'] = list(np.random.randint(1,15,len(med_inventory)))
@@ -88,12 +88,20 @@ def get_min_shops():
     print('Inside get_min_shops...')
     sys.stdout.flush()
     sys.stderr.flush()
-    redisClient.lpush("logging", str({"rest.logs.seperate":"new request recieved"}))
+    redisClient.lpush("logging", str({"rest.logs.get_min_shops":"new request recieved"}))
 
     im_b64 = request.json['image']
     print('Data extracted!')
     sys.stdout.flush()
     sys.stderr.flush()
+
+    try:
+        email_id = request.json['email_id']
+    except:
+        redisClient.lpush("logging", str({"rest.logs.get_min_shops":"email_id not given, request returned with Error Code 400"}))
+        response_pickled = jsonpickle.encode({'Error': 'Email ID not provided!'})
+        return Response(response=response_pickled, status=400, mimetype='application/json')
+
 
     hash_value = uuid.uuid4().hex
     fname = "%s.png" % hash_value
@@ -103,25 +111,25 @@ def get_min_shops():
     print('Image file created!')
     sys.stdout.flush()
     sys.stderr.flush()
-    redisClient.lpush("logging", str({"rest.logs.seperate":f"Image created - {fname}"}))
+    redisClient.lpush("logging", str({"rest.logs.get_min_shops":f"Image created - {fname}"}))
 
     client.fput_object(recieptbucket, fname, f"./{fname}")
     print('Image uploaded to minio!')
     sys.stdout.flush()
     sys.stderr.flush()
-    redisClient.lpush("logging", str({"rest.logs.seperate":f"Image uploaded to minio - {fname}"}))
+    redisClient.lpush("logging", str({"rest.logs.get_min_shops":f"Image uploaded to minio - {fname}"}))
 
     os.remove(fname)
     print('Image deleted from local system.')
     sys.stdout.flush()
     sys.stderr.flush()
-    redisClient.lpush("logging", str({"rest.logs.seperate":f"Image removed from local - {fname}"}))
+    redisClient.lpush("logging", str({"rest.logs.get_min_shops":f"Image removed from local - {fname}"}))
 
-    redisClient.lpush("toWorker", str({"rest.worker.fname":fname}))
+    redisClient.lpush("toWorker", str({"rest.worker.fname_email":f"{fname}_{email_id}"}))
     print('Redis worker queue updated!')
     sys.stdout.flush()
     sys.stderr.flush()
-    redisClient.lpush("logging", str({"rest.logs.seperate":"worker queue updated"}))
+    redisClient.lpush("logging", str({"rest.logs.get_min_shops":"worker queue updated"}))
     
     response_pickled = jsonpickle.encode({'hash': hash_value, 'reason': 'Check your email for output'})
     return Response(response=response_pickled, status=200, mimetype='application/json')
