@@ -1,4 +1,5 @@
 import os, sys, redis, json, shutil, pandas as pd, numpy as np
+from google.cloud import vision
 from minio import Minio
 import mysql.connector
 
@@ -54,6 +55,38 @@ columns = [c_data[0] for c_data in myresult]
 print(columns)
 sys.stdout.flush()
 sys.stderr.flush()
+
+# ---------Connecting with Google Vision API----------
+
+path= 'credentials.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS']=path
+
+def text_detection(cont):
+  
+  client = vision.ImageAnnotatorClient()
+  response = client.text_detection({'content' :cont})
+  
+  if response.error.message:
+    raise Exception(f"check the website for {response.error.message}")
+  
+  return response
+
+def img_txt(img):
+  
+  with open(img,'rb') as img_file:
+    content=img_file.read()
+  
+  resp= text_detection(content)
+  
+  texts= resp.text_annotations
+  lis = texts[0].description.split('\n')
+  
+  keys= lis[lis.index('Medicine Name')+1: lis.index('Quantity')]
+  val= lis[lis.index('Quantity')+1: lis.index('Signature')]
+  val = [int(x) for x in val]
+  reciept_data =dict(zip(keys,val))
+  
+  return reciept_data
 
 # ---------Algorithm Logic----------
 
@@ -134,14 +167,15 @@ while True:
                 file_data.write(d)
         redisClient.lpush("logging", str({"worker.logs.Image downloaded":fname}))
         
-        # write ocr logic
-        med_list = {'Abiraterone Acetate': 5, 'Albuterol':8, 'hello': 2, 'Acyclovir': 11, 'Albuterol Sulfate': 15}
-        
+        med_list = img_txt(fname)
+
         output = get_output(med_list)
         redisClient.lpush("logging", str({"worker.logs.output": f"{output}"}))
 
         os.remove(fname)
         redisClient.lpush("logging", str({"worker.logs.Image_deleted_from_local": f"{fname}"}))
+
+        # Email logic remaining
 
     except Exception as exp:
         print(f"Exception raised in log loop: {str(exp)}")
