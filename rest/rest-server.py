@@ -134,6 +134,41 @@ def get_min_shops():
     response_pickled = jsonpickle.encode({'hash': hash_value, 'reason': 'Check your email for output'})
     return Response(response=response_pickled, status=200, mimetype='application/json')
 
+@app.route('/sql', methods=['POST', 'GET'])
+def sql():
+    print('Inside sql...')
+    sys.stdout.flush()
+    sys.stderr.flush()
+    redisClient.lpush("logging", str({"rest.logs.sql":"new request recieved"}))
+
+    sql = request.json['sql']
+    val = request.json['val']
+    
+    cmd = sql.split()[0].lower()
+    if cmd not in ['insert', 'update', 'delete']:
+        redisClient.lpush("logging", str({"rest.logs.sql":"unknown sql command, request returned with Error Code 400"}))
+        response_pickled = jsonpickle.encode({'Error': 'unknown sql command!'})
+        return Response(response=response_pickled, status=400, mimetype='application/json')
+
+    print(sql, val, cmd)
+    
+    conn = mysql.connect()
+    cursor = conn.cursor()
+
+    cursor.execute(f"USE {db_name}")
+
+    n = cursor.executemany(sql, val)
+    conn.commit()
+    del val
+    print(f'{cmd} command, rows affected:', n)
+    redisClient.lpush("logging", str({"rest.logs.insert_sql":f"{cmd} command, rows affected: {n} rows"}))
+    
+    cursor.close()
+    conn.close()
+
+    response_pickled = jsonpickle.encode({'table status': f'{cmd} command, rows affected: {n} rows!'})
+    return Response(response=response_pickled, status=200, mimetype='application/json')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002)
     # app.debug = True
