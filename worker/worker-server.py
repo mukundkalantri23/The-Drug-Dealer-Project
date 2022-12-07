@@ -1,4 +1,4 @@
-import os, sys, redis, json, shutil, pandas as pd, numpy as np
+import os, sys, redis, json, pandas as pd, numpy as np
 from google.cloud import vision
 from minio import Minio
 import mysql.connector
@@ -192,7 +192,8 @@ while True:
         print('sending output in email')
         sys.stdout.flush()
         sys.stderr.flush()
-        sg = sendgrid.SendGridAPIClient(api_key=os.getenv("SENDGRID_API_KEY"))
+        sg_api_key = os.getenv("SENDGRID_API_KEY")
+        sg = sendgrid.SendGridAPIClient(api_key=sg_api_key)
         
         from_email = Email(os.getenv("SENDGRID_VERIFIED_SENDER"))  # Change to your verified sender
         to_email = To(email_id)  # Change to your recipient

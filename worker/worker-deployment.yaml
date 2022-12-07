@@ -32,7 +32,10 @@ spec:
             - name: table_name
               value: data
             - name: SENDGRID_API_KEY
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: sendgrid-secret
+                  key: send_grid_API.txt
             - name: SENDGRID_VERIFIED_SENDER
               value: "mukundkalantri23@gmail.com"
         ports:
