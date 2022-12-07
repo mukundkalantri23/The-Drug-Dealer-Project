@@ -5,6 +5,9 @@
 # terminate process: kill -9 port_num
 #
 
+kubectl create secret generic sendgrid-secret --from-file=worker/send_grid_API.txt
+#kubectl get secret sendgrid-secret -o jsonpath='{.data}'
+
 kubectl apply -f redis/redis-deployment.yaml
 kubectl apply -f redis/redis-service.yaml
 
@@ -44,6 +47,7 @@ kubectl port-forward -n minio-ns --address 0.0.0.0 service/minio-proj 9001:9001 
 # kubectl delete svc rest-svc
 
 # kubectl delete secret mysql-secret
+# kubectl delete secret sendgrid-secret
 
 # kubectl delete pv mysql-pv-volume
 # kubectl delete pvc mysql-pv-claim
