@@ -15,28 +15,35 @@ spec:
       containers:
       - name: drugdealer-worker
         image: mukundkalantri23/drugdealer-worker:latest
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "25m"
+          limits:
+            memory: "100Mi"
+            cpu: "50m"
         env:
-            - name: REDIS_HOST
-              value: "redis"
-            - name: REDIS_PORT
-              value: "6379"
-            - name: MINIO_HOST
-              value: "minio:9000"
-            - name: db_root_password
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: password
-            - name: db_name
-              value: drugdealer
-            - name: table_name
-              value: data
-            - name: SENDGRID_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: sendgrid-secret
-                  key: send_grid_API.txt
-            - name: SENDGRID_VERIFIED_SENDER
-              value: "mukundkalantri23@gmail.com"
+          - name: REDIS_HOST
+            value: "redis"
+          - name: REDIS_PORT
+            value: "6379"
+          - name: MINIO_HOST
+            value: "minio:9000"
+          - name: db_root_password
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: password
+          - name: db_name
+            value: drugdealer
+          - name: table_name
+            value: data
+          - name: SENDGRID_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: sendgrid-secret
+                key: send_grid_API.txt
+          - name: SENDGRID_VERIFIED_SENDER
+            value: "mukundkalantri23@gmail.com"
         ports:
         - containerPort: 5002
