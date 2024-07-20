@@ -34,8 +34,8 @@ Implemented horizontal pod autoscaling for workers to handle variable loads effi
 This project provides a foundation for a service that can greatly ease the process of obtaining prescription drugs, with potential for further enhancement to improve accuracy and cost-effectiveness.<br>
 
 ## Links
-<li> [Project Report](https://github.com/mukundkalantri23/drug-dealer-project/blob/main/DrugDealer-Final%20Project%20Report.pdf)
-<li> [Demo Video](https://youtu.be/H7XsY34ja_I)
+[Project Report](https://github.com/mukundkalantri23/drug-dealer-project/blob/main/DrugDealer-Final%20Project%20Report.pdf)<br>
+[Demo Video](https://youtu.be/H7XsY34ja_I)<br>
   
 ## Team Members
 Mukund Kalantri, Medha Rudra, Sai Divya Sivani Pragadaraju
