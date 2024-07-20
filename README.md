@@ -18,6 +18,8 @@ The project aims to simplify the process of purchasing prescription medicines by
 <li> Worker Processing: A worker pod retrieves the image from Min.io, uses Google Vision API to extract medicine names, and queries MySQL for medicine availability in pharmacies. <br>
 <li> Output Generation: The optimal list of pharmacies is generated and emailed to the patient using SendGrid. <br>
 
+![Architecture Diagram](https://github.com/mukundkalantri23/The-Drug-Dealer-Project/blob/main/DCSC%20Project%20Final%20Architecture%20Diagram.jpg)
+
 ## Debugging & Testing
 <li> REST Server: Tested with Flask application locally. <br>
 <li> MySQL: Tested queries locally with SQLite and within the Kubernetes cluster. <br>
